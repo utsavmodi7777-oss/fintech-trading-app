@@ -44,14 +44,34 @@ const Navbar = ({ currentPage, setCurrentPage, onStockSelect }) => {
               Dashboard
             </button>
             <button
-              onClick={() => setCurrentPage('watchlist')}
+              onClick={() => setCurrentPage('global-markets')}
               className={`font-semibold transition-all pb-2 border-b-2 ${
-                currentPage === 'watchlist'
+                currentPage === 'global-markets'
                   ? 'text-primary-500 border-primary-500'
                   : 'text-gray-600 dark:text-gray-300 border-transparent hover:text-primary-500'
               }`}
             >
-              Watchlist
+              Markets
+            </button>
+            <button
+              onClick={() => setCurrentPage('india-stocks')}
+              className={`font-semibold transition-all pb-2 border-b-2 ${
+                currentPage === 'india-stocks'
+                  ? 'text-primary-500 border-primary-500'
+                  : 'text-gray-600 dark:text-gray-300 border-transparent hover:text-primary-500'
+              }`}
+            >
+              🇮🇳 India
+            </button>
+            <button
+              onClick={() => setCurrentPage('screener')}
+              className={`font-semibold transition-all pb-2 border-b-2 ${
+                currentPage === 'screener'
+                  ? 'text-primary-500 border-primary-500'
+                  : 'text-gray-600 dark:text-gray-300 border-transparent hover:text-primary-500'
+              }`}
+            >
+              Screener
             </button>
             <button
               onClick={() => setCurrentPage('portfolio')}
@@ -62,16 +82,6 @@ const Navbar = ({ currentPage, setCurrentPage, onStockSelect }) => {
               }`}
             >
               Portfolio
-            </button>
-            <button
-              onClick={() => setCurrentPage('analytics')}
-              className={`font-semibold transition-all pb-2 border-b-2 ${
-                currentPage === 'analytics'
-                  ? 'text-primary-500 border-primary-500'
-                  : 'text-gray-600 dark:text-gray-300 border-transparent hover:text-primary-500'
-              }`}
-            >
-              Analytics
             </button>
             <button
               onClick={() => setCurrentPage('alerts')}

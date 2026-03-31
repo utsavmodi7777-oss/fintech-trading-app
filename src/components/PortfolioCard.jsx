@@ -4,23 +4,33 @@ import { formatCurrency, formatPercentage } from '../utils/formatting'
 import { usePortfolio } from '../context/PortfolioContext'
 
 const PortfolioCard = () => {
-  const { portfolio } = usePortfolio()
+  const { portfolio, stockPrices } = usePortfolio()
+
 
   const totalInvestedValue = useMemo(() => {
-    return portfolio.investments.reduce((acc, inv) => acc + inv.quantity * inv.buyPrice, 0)
+    if (!portfolio.investments || portfolio.investments.length === 0) return 0;
+    return portfolio.investments.reduce((acc, inv) => acc + (Number(inv.quantity) || 0) * (Number(inv.buyPrice) || 0), 0)
   }, [portfolio.investments])
 
   const totalCurrentValue = useMemo(() => {
-    return portfolio.investments.reduce((acc, inv) => acc + inv.quantity * inv.currentPrice, 0)
-  }, [portfolio.investments])
+    if (!portfolio.investments || portfolio.investments.length === 0) return 0;
+    return portfolio.investments.reduce((acc, inv) => {
+      const price = (stockPrices && stockPrices[inv.symbol] && stockPrices[inv.symbol].price) || Number(inv.currentPrice) || 0
+      return acc + (Number(inv.quantity) || 0) * price
+    }, 0)
+  }, [portfolio.investments, stockPrices])
+
 
   const totalProfit = totalCurrentValue - totalInvestedValue
-  const profitPercentage = (totalProfit / totalInvestedValue) * 100
+  const profitPercentage = totalInvestedValue > 0 ? (totalProfit / totalInvestedValue) * 100 : 0
 
-  const pieData = portfolio.investments.map((inv) => ({
-    name: inv.symbol,
-    value: inv.quantity * inv.currentPrice,
-  }))
+  const pieData = (portfolio.investments || []).map((inv) => {
+    const price = (stockPrices && stockPrices[inv.symbol] && stockPrices[inv.symbol].price) || Number(inv.currentPrice) || 0
+    return {
+      name: inv.symbol,
+      value: (Number(inv.quantity) || 0) * price,
+    }
+  })
 
   const COLORS = ['#7180BF', '#c6ccef', '#a5b1e8', '#8a98d9', '#6f7dca']
 
@@ -82,7 +92,7 @@ const PortfolioCard = () => {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ name, value }) => `${name}: ${((value / totalCurrentValue) * 100).toFixed(1)}%`}
+              label={({ name, value }) => `${name}: ${totalCurrentValue > 0 ? ((value / totalCurrentValue) * 100).toFixed(1) : 0}%`}
               outerRadius={80}
               fill="#8884d8"
               dataKey="value"

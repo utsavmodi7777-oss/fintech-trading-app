@@ -9,6 +9,9 @@ import PortfolioPage from './pages/PortfolioPage'
 import ProfilePage from './pages/ProfilePage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import AlertsPage from './pages/AlertsPage'
+import GlobalMarketsPage from './pages/GlobalMarketsPage'
+import IndiaStocksPage from './pages/IndiaStocksPage'
+import StockScreenerPage from './pages/StockScreenerPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import AlertNotifications from './components/AlertNotifications'
@@ -62,6 +65,12 @@ function AppContent() {
         return <AnalyticsPage currentPage={currentPage} setCurrentPage={setCurrentPage} />
       case 'alerts':
         return <AlertsPage currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      case 'global-markets':
+        return <GlobalMarketsPage currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      case 'india-stocks':
+        return <IndiaStocksPage currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      case 'screener':
+        return <StockScreenerPage currentPage={currentPage} setCurrentPage={setCurrentPage} />
       case 'profile':
         return (
           <ProfilePage

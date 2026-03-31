@@ -8,8 +8,6 @@ import BuySellModal from '../components/BuySellModal'
 import AIInsights from '../components/AIInsights'
 import StockNews from '../components/StockNews'
 import Footer from '../components/Footer'
-import PriceRefreshButton from '../components/PriceRefreshButton'
-import APIConfigStatus from '../components/APIConfigStatus'
 import { SkeletonCard, SkeletonTable } from '../components/Skeleton'
 import { STOCK_DATA, TOP_GAINERS, TOP_LOSERS, TRENDING_STOCKS } from '../data/stocks'
 import { usePortfolio } from '../context/PortfolioContext'
@@ -21,7 +19,7 @@ const Dashboard = ({ currentPage, setCurrentPage }) => {
   const [chartTimeframe, setChartTimeframe] = useState('1D')
   const [chartType, setChartType] = useState('line')
   const [isLoading, setIsLoading] = useState(true)
-  const { portfolio, refreshStockPrices, isLoadingPrices, lastPriceUpdate } = usePortfolio()
+  const { portfolio } = usePortfolio()
 
   useEffect(() => {
     // Simulate data loading
@@ -62,15 +60,7 @@ const Dashboard = ({ currentPage, setCurrentPage }) => {
                 Manage your portfolio and explore market opportunities
               </p>
             </div>
-            <PriceRefreshButton 
-              onRefresh={refreshStockPrices} 
-              isLoading={isLoadingPrices}
-              lastUpdate={lastPriceUpdate}
-            />
           </div>
-
-          {/* API Status */}
-          <APIConfigStatus />
         </div>
 
         {/* Portfolio Card */}

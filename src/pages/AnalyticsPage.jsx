@@ -78,10 +78,10 @@ const AnalyticsPage = ({ setCurrentPage, currentPage }) => {
         currentPrice: inv.currentPrice,
       }
     })
-  }, [portfolio.investments])
-
-  // Calculate portfolio composition
-  const portfolioComposition = useMemo(() => {
+    const totalInvested = (stockPLData || []).reduce((acc, s) => acc + (Number(s.invested) || 0), 0)
+    const totalCurrent = (stockPLData || []).reduce((acc, s) => acc + (Number(s.current) || 0), 0)
+    const totalGain = totalCurrent - totalInvested
+    const totalGainPercent = totalInvested > 0 ? (totalGain / totalInvested) * 100 : 0
     if (!portfolio.investments || portfolio.investments.length === 0) {
       return []
     }
