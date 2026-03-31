@@ -1,5 +1,6 @@
 import React, { createContext, useState, useCallback, useEffect } from 'react'
 import { useAuth } from './AuthContext'
+import { fetchStockPrice, fetchMultipleStocks } from '../services/stockAPI'
 
 export const PortfolioContext = createContext()
 
@@ -14,6 +15,10 @@ export const PortfolioProvider = ({ children }) => {
     transactionHistory: [],
   })
 
+  const [stockPrices, setStockPrices] = useState({})
+  const [isLoadingPrices, setIsLoadingPrices] = useState(false)
+  const [lastPriceUpdate, setLastPriceUpdate] = useState(null)
+
   // Sync portfolio from logged-in user's data
   useEffect(() => {
     if (user && user.portfolio) {
@@ -25,6 +30,23 @@ export const PortfolioProvider = ({ children }) => {
       })
     }
   }, [user])
+
+  // Fetch real-time stock prices
+  const refreshStockPrices = useCallback(async () => {
+    setIsLoadingPrices(true)
+    try {
+      const symbols = portfolio.investments.map((inv) => inv.symbol)
+      if (symbols.length > 0) {
+        const prices = await fetchMultipleStocks(symbols)
+        setStockPrices(prices)
+        setLastPriceUpdate(new Date())
+      }
+    } catch (error) {
+      console.error('Error refreshing stock prices:', error)
+    } finally {
+      setIsLoadingPrices(false)
+    }
+  }, [portfolio.investments])
 
   const [watchlist, setWatchlist] = useState(portfolio.watchlist)
 
@@ -96,6 +118,10 @@ export const PortfolioProvider = ({ children }) => {
         removeFromWatchlist,
         buyStock,
         sellStock,
+        stockPrices,
+        isLoadingPrices,
+        refreshStockPrices,
+        lastPriceUpdate,
       }}
     >
       {children}

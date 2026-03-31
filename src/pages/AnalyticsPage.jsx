@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import ExportButton from '../components/ExportButton'
 import {
   LineChart,
   Line,
@@ -26,10 +27,34 @@ import {
 } from 'recharts'
 import { usePortfolio } from '../context/PortfolioContext'
 import { TrendingUp, TrendingDown, AlertCircle, BarChart3, LineChart as LineChartIcon, PieChart as PieChartIcon, Download } from 'lucide-react'
+import { exportAnalyticsCSV } from '../services/csvExport'
+import { exportAnalyticsPDF } from '../services/pdfExport'
 
 const AnalyticsPage = ({ setCurrentPage, currentPage }) => {
   const { portfolio } = usePortfolio()
   const [chartView, setChartView] = useState('detailed')
+
+  const handleExportAnalyticsCSV = async () => {
+    const analyticsData = {
+      'Total Invested': portfolio.investments.reduce((acc, s) => acc + s.buyPrice * s.quantity, 0),
+      'Current Value': portfolio.investments.reduce((acc, s) => acc + s.currentPrice * s.quantity, 0),
+      'Holdings': portfolio.investments.length,
+      'Transactions': portfolio.transactionHistory.length,
+      'Account Balance': portfolio.balance,
+    }
+    exportAnalyticsCSV(analyticsData, `analytics-${new Date().getTime()}.csv`)
+  }
+
+  const handleExportAnalyticsPDF = async () => {
+    const analyticsData = {
+      'Total Invested': portfolio.investments.reduce((acc, s) => acc + s.buyPrice * s.quantity, 0),
+      'Current Value': portfolio.investments.reduce((acc, s) => acc + s.currentPrice * s.quantity, 0),
+      'Holdings': portfolio.investments.length,
+      'Transactions': portfolio.transactionHistory.length,
+      'Account Balance': portfolio.balance,
+    }
+    await exportAnalyticsPDF(analyticsData)
+  }
 
   // Calculate P&L by stock
   const stockPLData = useMemo(() => {
@@ -172,10 +197,18 @@ const AnalyticsPage = ({ setCurrentPage, currentPage }) => {
                 Deep dive into your portfolio performance and market trends
               </p>
             </div>
-            <div className={`bg-gradient-to-br ${statusColor} h-24 w-40 rounded-2xl p-6 text-white shadow-xl`}>
-              <p className="text-sm font-semibold opacity-90 mb-1">Portfolio Status</p>
-              <p className="text-2xl font-bold">{totalGainPercent >= 0 ? '+' : ''}{totalGainPercent.toFixed(2)}%</p>
-              <p className="text-xs opacity-85">₹{(totalGain / 100000).toFixed(2)}L gain</p>
+            <div className="flex flex-col gap-4">
+              <div className={`bg-gradient-to-br ${statusColor} h-24 w-40 rounded-2xl p-6 text-white shadow-xl`}>
+                <p className="text-sm font-semibold opacity-90 mb-1">Portfolio Status</p>
+                <p className="text-2xl font-bold">{totalGainPercent >= 0 ? '+' : ''}{totalGainPercent.toFixed(2)}%</p>
+                <p className="text-xs opacity-85">₹{(totalGain / 100000).toFixed(2)}L gain</p>
+              </div>
+              <ExportButton
+                onExportCSV={handleExportAnalyticsCSV}
+                onExportPDF={handleExportAnalyticsPDF}
+                label="Export Report"
+                size="sm"
+              />
             </div>
           </div>
         </div>

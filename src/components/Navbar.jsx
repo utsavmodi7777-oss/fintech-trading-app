@@ -73,6 +73,16 @@ const Navbar = ({ currentPage, setCurrentPage, onStockSelect }) => {
             >
               Analytics
             </button>
+            <button
+              onClick={() => setCurrentPage('alerts')}
+              className={`font-semibold transition-all pb-2 border-b-2 ${
+                currentPage === 'alerts'
+                  ? 'text-primary-500 border-primary-500'
+                  : 'text-gray-600 dark:text-gray-300 border-transparent hover:text-primary-500'
+              }`}
+            >
+              Alerts
+            </button>
           </div>
 
           {/* Search - Center on Desktop */}

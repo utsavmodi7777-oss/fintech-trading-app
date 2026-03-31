@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { PortfolioProvider } from './context/PortfolioContext'
 import { NotificationProvider } from './context/NotificationContext'
+import { AlertsProvider } from './context/AlertsContext'
 import Dashboard from './pages/Dashboard'
 import WatchlistPage from './pages/WatchlistPage'
 import PortfolioPage from './pages/PortfolioPage'
 import ProfilePage from './pages/ProfilePage'
 import AnalyticsPage from './pages/AnalyticsPage'
+import AlertsPage from './pages/AlertsPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
+import AlertNotifications from './components/AlertNotifications'
 import Toast from './components/Toast'
 
 // Groq API Key (user will set this)
@@ -57,6 +60,8 @@ function AppContent() {
         return <PortfolioPage currentPage={currentPage} setCurrentPage={setCurrentPage} />
       case 'analytics':
         return <AnalyticsPage currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      case 'alerts':
+        return <AlertsPage currentPage={currentPage} setCurrentPage={setCurrentPage} />
       case 'profile':
         return (
           <ProfilePage
@@ -79,6 +84,7 @@ function AppContent() {
   return (
     <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors">
       {renderPage()}
+      <AlertNotifications />
       <Toast />
     </div>
   )
@@ -89,7 +95,9 @@ function App() {
     <AuthProvider>
       <PortfolioProvider>
         <NotificationProvider>
-          <AppContent />
+          <AlertsProvider>
+            <AppContent />
+          </AlertsProvider>
         </NotificationProvider>
       </PortfolioProvider>
     </AuthProvider>

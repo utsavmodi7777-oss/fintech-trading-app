@@ -8,6 +8,8 @@ import BuySellModal from '../components/BuySellModal'
 import AIInsights from '../components/AIInsights'
 import StockNews from '../components/StockNews'
 import Footer from '../components/Footer'
+import PriceRefreshButton from '../components/PriceRefreshButton'
+import APIConfigStatus from '../components/APIConfigStatus'
 import { SkeletonCard, SkeletonTable } from '../components/Skeleton'
 import { STOCK_DATA, TOP_GAINERS, TOP_LOSERS, TRENDING_STOCKS } from '../data/stocks'
 import { usePortfolio } from '../context/PortfolioContext'
@@ -19,7 +21,7 @@ const Dashboard = ({ currentPage, setCurrentPage }) => {
   const [chartTimeframe, setChartTimeframe] = useState('1D')
   const [chartType, setChartType] = useState('line')
   const [isLoading, setIsLoading] = useState(true)
-  const { portfolio } = usePortfolio()
+  const { portfolio, refreshStockPrices, isLoadingPrices, lastPriceUpdate } = usePortfolio()
 
   useEffect(() => {
     // Simulate data loading
@@ -51,12 +53,24 @@ const Dashboard = ({ currentPage, setCurrentPage }) => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8 animate-fade-in">
-          <h1 className="text-4xl font-manrope font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent mb-2">
-            Welcome back!
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage your portfolio and explore market opportunities
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div>
+              <h1 className="text-4xl font-manrope font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent mb-2">
+                Welcome back!
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                Manage your portfolio and explore market opportunities
+              </p>
+            </div>
+            <PriceRefreshButton 
+              onRefresh={refreshStockPrices} 
+              isLoading={isLoadingPrices}
+              lastUpdate={lastPriceUpdate}
+            />
+          </div>
+
+          {/* API Status */}
+          <APIConfigStatus />
         </div>
 
         {/* Portfolio Card */}

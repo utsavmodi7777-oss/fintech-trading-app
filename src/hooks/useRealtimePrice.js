@@ -1,25 +1,44 @@
 import { useState, useEffect } from 'react'
+import { fetchStockPrice } from '../services/stockAPI'
 
 export const useRealTimePrice = (initialPrice, symbol) => {
   const [price, setPrice] = useState(initialPrice)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const [priceHistory, setPriceHistory] = useState([initialPrice])
+  const [lastUpdate, setLastUpdate] = useState(null)
 
+  // Fetch real stock price from API
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPrice((prevPrice) => {
-        // Realistic price movement: ±0.5% every second
-        const change = (Math.random() - 0.5) * 0.01 * prevPrice
-        const newPrice = Math.max(prevPrice + change, prevPrice * 0.8) // Prevent too much decline
-        
-        setPriceHistory((prev) => [...prev.slice(-59), newPrice]) // Keep last 60 prices
-        return newPrice
-      })
-    }, 1000) // Update every second
+    if (!symbol) return
 
+    const fetchPrice = async () => {
+      setLoading(true)
+      try {
+        const data = await fetchStockPrice(symbol)
+        if (data && data.price) {
+          setPrice(data.price)
+          setPriceHistory((prev) => [...prev.slice(-59), data.price])
+          setLastUpdate(new Date())
+          setError(null)
+        }
+      } catch (err) {
+        setError(err.message)
+        console.error('Error fetching price:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    // Fetch immediately on mount
+    fetchPrice()
+
+    // Then refresh every 5 minutes (to avoid API rate limits)
+    const interval = setInterval(fetchPrice, 5 * 60 * 1000)
     return () => clearInterval(interval)
-  }, [])
+  }, [symbol])
 
-  return { price, priceHistory }
+  return { price, priceHistory, loading, error, lastUpdate }
 }
 
 export const useLocalStorage = (key, initialValue) => {
